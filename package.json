@@ -1,0 +1,26 @@
+{
+  "name": "openssl-ca",
+  "version": "0.0.0",
+  "description": "openssl CA web interface, supports full openssl ca functionality.",
+  "main": "program.js",
+  "scripts": {
+    "test": "node program.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bufo333/openssl-ca"
+  },
+  "keywords": [
+    "openssl",
+    "ca",
+    "web",
+    "interface",
+    "us"
+  ],
+  "author": "John Burns",
+  "license": "GPLV3",
+  "bugs": {
+    "url": "https://github.com/bufo333/openssl-ca/issues"
+  },
+  "homepage": "https://github.com/bufo333/openssl-ca"
+}
