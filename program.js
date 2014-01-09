@@ -3,11 +3,13 @@
 // Third party Libraries and requirements.
 
 var fs = require('fs');
-//var tmp = require('tmp');
+var tmp = require('tmp');
 var path = require('path');
-  
+var spawn = require('child_process').exec;
 
 // variable declarations
+
+var userReq = new Object();
 
 var caDefault,
     policy,
@@ -36,7 +38,19 @@ function configureApp() {
                     }
                 else {
                     file = JSON.parse(data);
-                    console.log("file contents: " + data);
+                    caDefault = file[0];
+                    policy= file[1];
+                    policyMatch = file[2];
+                    req = file[3];
+                    reqDistinguishedName = file[4];
+                    reqAttributes = file[5];
+                    usrCert = file[6];
+                    v3Req = file[7];
+                    v3Ca = file[8];
+                    crlExt = file[9];
+                    proxyCertExt = file[10];
+                    createCertFile();
+                    //console.log("file contents: " + data);
                     }
             })
         }
@@ -87,6 +101,7 @@ function configureApp() {
             }
 
             reqDistinguishedName = {
+                name: "[ req_distinguished_name ]",
                 countryName: "Country Name (2 letter code)",
                 countryName_default: "US",
                 countryName_min: "2",
@@ -94,8 +109,8 @@ function configureApp() {
                 stateOrProvinceName: "State or Province Name (full name)",
                 stateOrProvinceName_default: "FL",
                 localityName: "Locality Name (eg, city)",
-                "0.organizationName": "Organization Name (eg, company)",
-                "0.organizationName_default": "Organization Name Here",
+                "organizationName": "Organization Name (eg, company)",
+                "organizationName_default": "Organization Name Here",
                 organizationalUnitName : "Organizational Unit Name (eg, section)",
                 commonName: "Common Name (e.g. server FQDN or YOUR name)",
                 commonName_max: "64",
@@ -147,8 +162,7 @@ function configureApp() {
             }
             writeConfigFile();
         }
-    }
-                 )
+    })
 }
 
 
@@ -179,5 +193,70 @@ function writeConfigFile() {
 
 }
 
+function createCertFile() {
+
+    var certCFG=[];
+    certCFG.push("RANDFILE\t\t= $ENV::HOME/.rnd");
+    certCFG.push("\n");
+    certCFG.push(req.name);
+    certCFG.push(Object.keys(req)[1]+ "\t\t= " + req.default_bits);
+    certCFG.push(Object.keys(req)[2]+ "\t\t= " + req.default_keyfile);
+    certCFG.push(Object.keys(req)[3]+ "\t\t= " + req.distinguished_name);
+    certCFG.push(Object.keys(req)[4]+ "\t\t= " + req.attributes);
+    certCFG.push("prompt\t\t= no");
+    certCFG.push("output_password\t\t= 12345");
+    certCFG.push("\n");
+    certCFG.push(reqDistinguishedName.name);
+    certCFG.push(Object.keys(reqDistinguishedName)[1]+ "\t\t= " + reqDistinguishedName.countryName);
+    certCFG.push(Object.keys(reqDistinguishedName)[5]+ "\t\t= " + reqDistinguishedName.stateOrProvinceName);
+    certCFG.push(Object.keys(reqDistinguishedName)[7]+ "\t\t= " + reqDistinguishedName.localityName);
+    certCFG.push(Object.keys(reqDistinguishedName)[8]+ "\t\t= " + "O." + reqDistinguishedName.organizationName);
+    certCFG.push(Object.keys(reqDistinguishedName)[10]+ "\t\t= " + reqDistinguishedName.organizationalUnitName);
+    certCFG.push(Object.keys(reqDistinguishedName)[11]+ "\t\t= " + reqDistinguishedName.commonName);
+    certCFG.push(Object.keys(reqDistinguishedName)[13]+ "\t\t= " + reqDistinguishedName.emailAddress);
+
+
+
+
+    for (var i = 0;i<Object.keys(certCFG).length;i++){
+        console.log(certCFG[i]);
+}
+
+    tmp.file({postfix: '.cnf', mode: '0755'}, 
+             function __tempFileCreated(err, path, fd) {
+                 if (err) throw err;
+                 console.log(path);
+                 for (var i = 0;i<certCFG.length;i++){
+                     var dskfile = fs.createWriteStream(path);
+                     fs.append(fd,certCFG[i]);
+                     
+                 }
+                 })
+}
+
+
+function createCSR(){
+    var privkey = createPrivKey();
+    createCertFile();
+}
+
+function createPrivKey() {
+    var ps = spawn('/usr/bin/openssl genrsa 2048');
+    ps.stdout.on('data', function(buffer) {
+        console.log(buffer);
+        return(buffer);
+        })
+                 
+}
+
+
+function signCert(){
+
+}
+
+
+
+
+//createPrivKey();
 configureApp();
 
