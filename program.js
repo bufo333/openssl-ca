@@ -197,23 +197,23 @@ function createCertFile() {
 
     var certCFG=[];
     certCFG.push("RANDFILE\t\t= $ENV::HOME/.rnd");
-    certCFG.push("\n");
-    certCFG.push(req.name);
-    certCFG.push(Object.keys(req)[1]+ "\t\t= " + req.default_bits);
-    certCFG.push(Object.keys(req)[2]+ "\t\t= " + req.default_keyfile);
-    certCFG.push(Object.keys(req)[3]+ "\t\t= " + req.distinguished_name);
-    certCFG.push(Object.keys(req)[4]+ "\t\t= " + req.attributes);
-    certCFG.push("prompt\t\t= no");
-    certCFG.push("output_password\t\t= 12345");
-    certCFG.push("\n");
-    certCFG.push(reqDistinguishedName.name);
-    certCFG.push(Object.keys(reqDistinguishedName)[1]+ "\t\t= " + reqDistinguishedName.countryName);
-    certCFG.push(Object.keys(reqDistinguishedName)[5]+ "\t\t= " + reqDistinguishedName.stateOrProvinceName);
-    certCFG.push(Object.keys(reqDistinguishedName)[7]+ "\t\t= " + reqDistinguishedName.localityName);
-    certCFG.push(Object.keys(reqDistinguishedName)[8]+ "\t\t= " + "O." + reqDistinguishedName.organizationName);
-    certCFG.push(Object.keys(reqDistinguishedName)[10]+ "\t\t= " + reqDistinguishedName.organizationalUnitName);
-    certCFG.push(Object.keys(reqDistinguishedName)[11]+ "\t\t= " + reqDistinguishedName.commonName);
-    certCFG.push(Object.keys(reqDistinguishedName)[13]+ "\t\t= " + reqDistinguishedName.emailAddress);
+    certCFG.push("\n\n\n");
+    certCFG.push(req.name+"\n");
+    certCFG.push(Object.keys(req)[1]+ "\t\t= " + req.default_bits+"\n");
+    certCFG.push(Object.keys(req)[2]+ "\t\t= " + req.default_keyfile+"\n");
+    certCFG.push(Object.keys(req)[3]+ "\t\t= " + req.distinguished_name+"\n");
+    certCFG.push(Object.keys(req)[4]+ "\t\t= " + req.attributes+"\n");
+    certCFG.push("prompt\t\t= no"+"\n");
+    certCFG.push("output_password\t\t= 12345"+"\n");
+    certCFG.push("\n"+"\n"+"\n"+"\n");
+    certCFG.push(reqDistinguishedName.name+"\n");
+    certCFG.push(Object.keys(reqDistinguishedName)[1]+ "\t\t= " + reqDistinguishedName.countryName+"\n");
+    certCFG.push(Object.keys(reqDistinguishedName)[5]+ "\t\t= " + reqDistinguishedName.stateOrProvinceName+"\n");
+    certCFG.push(Object.keys(reqDistinguishedName)[7]+ "\t\t= " + reqDistinguishedName.localityName+"\n");
+    certCFG.push(Object.keys(reqDistinguishedName)[8]+ "\t\t= " + "O." + reqDistinguishedName.organizationName+"\n");
+    certCFG.push(Object.keys(reqDistinguishedName)[10]+ "\t\t= " + reqDistinguishedName.organizationalUnitName+"\n");
+    certCFG.push(Object.keys(reqDistinguishedName)[11]+ "\t\t= " + reqDistinguishedName.commonName+"\n");
+    certCFG.push(Object.keys(reqDistinguishedName)[13]+ "\t\t= " + reqDistinguishedName.emailAddress+"\n");
 
 
 
@@ -221,17 +221,10 @@ function createCertFile() {
     for (var i = 0;i<Object.keys(certCFG).length;i++){
         console.log(certCFG[i]);
 }
-
-    tmp.file({postfix: '.cnf', mode: '0755'}, 
-             function __tempFileCreated(err, path, fd) {
-                 if (err) throw err;
-                 console.log(path);
-                 for (var i = 0;i<certCFG.length;i++){
-                     var dskfile = fs.createWriteStream(path);
-                     fs.append(fd,certCFG[i]);
-                     
-                 }
-                 })
+    var filename = fs.createWriteStream('tmp.cnf', {'flags':'a'});
+    for (var i = 0;i<certCFG.length;i++){
+        filename.write(certCFG[i]);
+    }
 }
 
 
