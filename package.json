@@ -23,7 +23,5 @@
     "url": "https://github.com/bufo333/openssl-ca/issues"
   },
   "homepage": "https://github.com/bufo333/openssl-ca",
-  "dependencies": {
-    "tmp": "0.0.23"
-  }
+  "dependencies": {}
 }
